@@ -1,0 +1,3 @@
+[submodule "evakaturku"]
+	path = evakaturku
+	url = git@github.com:City-of-Turku/evakaturku.git

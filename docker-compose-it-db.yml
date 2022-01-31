@@ -1,0 +1,26 @@
+# SPDX-FileCopyrightText: 2021 City of Turku
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later
+
+version: "3.7"
+services:
+  db:
+    build:
+      context: .
+      dockerfile: Dockerfile-it-db
+    container_name: parser-migration-db
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: migration
+  flyway:
+    image: flyway/flyway
+    command: -url=jdbc:postgresql://db:5432/migration -user=postgres -password=postgres -placeholders.application_user=postgres -placeholders.migration_user=postgres migrate
+    volumes:
+      - ./evakaturku/evaka/service/src/main/resources/db/migration:/flyway/sql/evaka
+      - ./evakaturku/service/src/main/resources/db/migration:/flyway/sql/evakaturku
+    depends_on:
+      - db
+    restart: on-failure
